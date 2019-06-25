@@ -9,3 +9,5 @@
 #Datasheet here: https://www.silabs.com/documents/public/data-sheets/si115x-datasheet.pdf
 #SI1132 measures UV, Ambient and IR Light levels and outputs via I2C bus
 #Datasheet here: https://www.silabs.com/documents/public/data-sheets/Si1132.pdf
+#adafruit has an arduino library for the si1145, which may be somewhat similar
+#https://github.com/adafruit/Adafruit_SI1145_Library
