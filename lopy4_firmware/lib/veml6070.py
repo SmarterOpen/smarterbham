@@ -25,6 +25,12 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
+
+#********************************
+# Also found code at https://github.com/adafruit/Adafruit_CircuitPython_VEML6070
+# IF it's better... feel free to swap that in
+#**********************************
+
 import time
 
 import smbus # pylint: disable=import-error
