@@ -1,0 +1,4 @@
+#Code from https://github.com/cmur2/python-veml6070 
+
+from .veml6070 import Veml6070
+from .veml6070 import INTEGRATIONTIME_1_2T, INTEGRATIONTIME_1T, INTEGRATIONTIME_2T, INTEGRATIONTIME_4T, RSET_240K, RSET_270K, RSET_300K, RSET_600K
