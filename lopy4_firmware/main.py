@@ -4,6 +4,11 @@
 #BME680 project from Micropython.. may need some modifications to run
 #import bme680
 #from i2c import I2CAdapter
+
+#VEML6070 code for Python on Raspberry Pi 2/3
+import veml6070
+
+
 from hpma115s0 import HPMA115S0
 import time
 from machine import UART
@@ -70,5 +75,16 @@ while 1:
 #except KeyboardInterrupt:
 #    pass
 
+#Code for VEML6070 on Raspberry Pi 2/3  may need modification
+#if __name__ == '__main__':
+#    veml = veml6070.Veml6070()
+#    for i in [veml6070.INTEGRATIONTIME_1_2T,
+#              veml6070.INTEGRATIONTIME_1T,
+#              veml6070.INTEGRATIONTIME_2T,
+#              veml6070.INTEGRATIONTIME_4T]:
+#        veml.set_integration_time(i)
+#        uv_raw = veml.get_uva_light_intensity_raw()
+#        uv = veml.get_uva_light_intensity()
+#print "Integration Time setting %d: %f W/(m*m) from raw value %d" % (i, uv, uv_raw)
 
    time.sleep(300)#wait 5 minutes before next reading
