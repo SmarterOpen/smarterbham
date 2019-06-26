@@ -74,6 +74,17 @@
 #}
 #measurementPaused = 1;
 
+#resume autonomous measurements
+#void resumeMeasurement(void)
+#{
+#   if (!measurementPaused)
+#      return;
+#   ClearIrqStatus(IE_ALL);
+#   WriteToRegister(REG_IRQ_CFG, ICG_INTOE); // re-enables INT pin
+#   PsAlsAuto();
+#   measurementPaused = 0;
+#}
+
 #will finish more later
 
 #Set MEAS_RATE = 0 (Forced Measurement Mode) for lowest power consumption
