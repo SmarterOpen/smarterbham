@@ -8,7 +8,7 @@ from hpma115s0 import HPMA115S0
 import time
 from machine import UART
 
-#BME680 project from Micropython.. may need some modifications to run
+#BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
 #i2c_dev = I2CAdapter()
 #sensor = bme680.BME680(i2c_device=i2c_dev)
 
@@ -26,7 +26,7 @@ hpma115S0 = HPMA115S0()
 
 hpma115S0.init()
 
-#BME680 project from Micropython.. may need some modifications to run
+#BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
 #Init the BME680
 # These oversampling settings can be tweaked to
 # change the balance between accuracy and noise in
@@ -54,7 +54,7 @@ while 1:
    time.sleep(1)
    hpma115S0.stopParticleMeasurement()#Sleep the fan on the Dust sensor
    
-#BME680 project from Micropython.. may need some modifications to run
+#BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
 #   try:
 #    while True:
 #        if sensor.get_sensor_data():
@@ -66,7 +66,6 @@ while 1:
 #                sensor.data.gas_resistance)
 #
 #            print(output)
-#            client.publish("test", output)
 #            time.sleep(1)
 #except KeyboardInterrupt:
 #    pass
