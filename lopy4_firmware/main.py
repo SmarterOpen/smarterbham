@@ -3,10 +3,10 @@
 
 #BME680 project from Micropython.. may need some modifications to run
 import bme680
-#from i2c import I2CAdapter
-from machine import I2C,Pin
-i2c = I2C(0, pins=("P9","P10"))
-i2c.init(I2C.MASTER, baudrate=100000)
+from i2c import I2CAdapter
+#from machine import I2C,Pin
+#i2c = I2C(0, pins=("P9","P10"))
+#i2c.init(I2C.MASTER, baudrate=100000)
 
 
 #VEML6070 code for Python on Raspberry Pi 2/3
@@ -18,9 +18,8 @@ import time
 from machine import UART
 
 #BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
-#i2c_dev = I2CAdapter()
+i2c_dev = I2CAdapter()
 sensor = bme680.BME680(i2c_device=i2c)
-# This line triggers Exception:sAttrributeError,:Module object has no attribute BME680
 
 # initialize class for HPMA115S0 Honeywell Dust Particulate sensor
 # sensor returns PM2.5 and PM10 particulate count in Parts Per Billion
