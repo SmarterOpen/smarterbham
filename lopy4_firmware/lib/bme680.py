@@ -8,6 +8,7 @@
 #https://github.com/adafruit/Adafruit_CircuitPython_BME680
 
 #Code from https://github.com/robmarkcole/bme680-mqtt-micropython
+from machine import I2C
 from constants import *
 import math
 import time
@@ -28,9 +29,12 @@ class BME680(BME680Data):
 
         self.i2c_addr = i2c_addr
         self._i2c = i2c_device
-        if self._i2c is None:
-            import smbus
-            self._i2c = smbus.SMBus(1)
+        if self._i2c is not None:
+            #import smbus
+            #self._i2c = smbus.SMBus(1)
+            self.i2c = i2c
+         else:
+            self.i2c = I2C(0, mode=I2C.MASTER, pins=(sda, scl))
 
         self.chip_id = self._get_regs(CHIP_ID_ADDR, 1)
         if self.chip_id != CHIP_ID:
