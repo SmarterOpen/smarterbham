@@ -20,6 +20,7 @@ from machine import UART
 #BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
 #i2c_dev = I2CAdapter()
 sensor = bme680.BME680(i2c_device=i2c)
+# This line triggers Exception:sAttrributeError,:Module object has no attribute BME680
 
 # initialize class for HPMA115S0 Honeywell Dust Particulate sensor
 # sensor returns PM2.5 and PM10 particulate count in Parts Per Billion
