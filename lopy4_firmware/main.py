@@ -2,8 +2,12 @@
 # Modifying to work with Pycom Lopy4
 
 #BME680 project from Micropython.. may need some modifications to run
-#import bme680
+import bme680
 #from i2c import I2CAdapter
+from machine import I2C,Pin
+i2c = I2C(0, pins=("P9","P10"))
+i2c.init(I2C.MASTER, baudrate=100000)
+
 
 #VEML6070 code for Python on Raspberry Pi 2/3
 import veml6070
@@ -15,7 +19,7 @@ from machine import UART
 
 #BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
 #i2c_dev = I2CAdapter()
-#sensor = bme680.BME680(i2c_device=i2c_dev)
+sensor = bme680.BME680(i2c_device=i2c)
 
 # initialize class for HPMA115S0 Honeywell Dust Particulate sensor
 # sensor returns PM2.5 and PM10 particulate count in Parts Per Billion
@@ -36,10 +40,16 @@ hpma115S0.init()
 # These oversampling settings can be tweaked to
 # change the balance between accuracy and noise in
 # the data.
-#sensor.set_humidity_oversample(bme680.OS_2X)
-#sensor.set_pressure_oversample(bme680.OS_4X)
-#sensor.set_temperature_oversample(bme680.OS_8X)
-#sensor.set_filter(bme680.FILTER_SIZE_3)
+try:
+   sensor.set_humidity_oversample(bme680.OS_2X)
+   sensor.set_pressure_oversample(bme680.OS_4X)
+   sensor.set_temperature_oversample(bme680.OS_8X)
+   sensor.set_filter(bme680.FILTER_SIZE_3)
+except Exception as e:
+   print('DEBUG :: @init the BME680 :: Exception: ' + str(e))
+   pycom.rgbled(red)
+   machine.idle()
+
 
 
 print("Starting")
@@ -60,20 +70,22 @@ while 1:
    hpma115S0.stopParticleMeasurement()#Sleep the fan on the Dust sensor
    
 #BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
-#   try:
-#    while True:
-#        if sensor.get_sensor_data():
-#
-#            output = "{} C, {} hPa, {} RH, {} RES,".format(
-#                sensor.data.temperature,
-#                sensor.data.pressure,
-#                sensor.data.humidity,
-#                sensor.data.gas_resistance)
-#
-#            print(output)
-#            time.sleep(1)
-#except KeyboardInterrupt:
-#    pass
+   try:
+    while True:
+        if sensor.get_sensor_data():
+
+            output = "{} C, {} hPa, {} RH, {} RES,".format(
+                sensor.data.temperature,
+                sensor.data.pressure,
+                sensor.data.humidity,
+                sensor.data.gas_resistance)
+
+            print(output)
+            time.sleep(1)
+   except Exception as e:
+      print('DEBUG :: @Get Reading from the BME680 :: Exception: ' + str(e))
+      pycom.rgbled(red)
+      pass
 
 #Code for VEML6070 on Raspberry Pi 2/3  may need modification
 #if __name__ == '__main__':
