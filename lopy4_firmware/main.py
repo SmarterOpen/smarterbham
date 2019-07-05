@@ -2,7 +2,7 @@
 # Modifying to work with Pycom Lopy4
 
 #BME680 project from Micropython.. may need some modifications to run
-#import bme680
+import bme680
 from i2c import I2CAdapter
 from network import LoRa
 import socket
@@ -19,6 +19,8 @@ pycom.rgbled(0x7f0000) #red
 #from machine import I2C,Pin
 #i2c = I2C(0, pins=("P9","P10"))
 #i2c.init(I2C.MASTER, baudrate=100000)
+i2c_dev = I2CAdapter()
+sensor = bme680.BME680(i2c_device=i2c_dev)
 
 
 #VEML6070 code for Python on Raspberry Pi 2/3
@@ -102,15 +104,15 @@ from machine import UART
 # These oversampling settings can be tweaked to
 # change the balance between accuracy and noise in
 # the data.
-#try:
-#   sensor.set_humidity_oversample(bme680.OS_2X)
-#   sensor.set_pressure_oversample(bme680.OS_4X)
-#   sensor.set_temperature_oversample(bme680.OS_8X)
-#   sensor.set_filter(bme680.FILTER_SIZE_3)
-#except Exception as e:
-#   print('DEBUG :: @init the BME680 :: Exception: ' + str(e))
-#   pycom.rgbled(red)
-#   machine.idle()
+try:
+   sensor.set_humidity_oversample(bme680.OS_2X)
+   sensor.set_pressure_oversample(bme680.OS_4X)
+   sensor.set_temperature_oversample(bme680.OS_8X)
+   sensor.set_filter(bme680.FILTER_SIZE_3)
+except Exception as e:
+   print('DEBUG :: @init the BME680 :: Exception: ' + str(e))
+   pycom.rgbled(red)
+   machine.idle()
 
 
 
@@ -132,23 +134,33 @@ while 1:
    #hpma115S0.stopParticleMeasurement()#Sleep the fan on the Dust sensor
    
 #BME680 project from Micropython.. may need some modifications to run.. Actually, looks like it was written for Pycom Wipy
-#   try:
-#    while True:
- #       if sensor.get_sensor_data():
-#
-#            output = "{} C, {} hPa, {} RH, {} RES,".format(
-#                sensor.data.temperature,
-#                sensor.data.pressure,
-#                sensor.data.humidity,
-#                sensor.data.gas_resistance)
+   try:
+      #while True:
+      if sensor.get_sensor_data():
 
-#            print(output)
+         output = "{} C, {} hPa, {} RH, {} RES,".format(
+            sensor.data.temperature,
+            sensor.data.pressure,
+            sensor.data.humidity,
+            sensor.data.gas_resistance)
+
+         print(output)
+         tempstruct=ustruct.pack('>H',int(sensor.data.temperature))
+         dewstruct=ustruct.pack('>H',int(sensor.data.dew_point))
+         pressstruct=ustruct.pack('>H',int(sensor.data.pressure))
+         print('pressure:',pressstruct[0]*256+pressstruct[1])
+         relhumidstruct=ustruct.pack('>H',int(sensor.data.humidity))
+         pybytes.send_signal(2,sensor.data.temperature)
+#            time.sleep(2)
 #            time.sleep(1)
-#   except Exception as e:
-#      print('DEBUG :: @Get Reading from the BME680 :: Exception: ' + str(e))
-#      pycom.rgbled(red)
-#      pass
+#         else:
+#            pybytes.send_signal(2,58)
 
+   except Exception as e:
+      print('DEBUG :: @Get Reading from the BME680 :: Exception: ' + str(e))
+#      pybytes.send_signal(2,85)
+#      pycom.rgbled(red)
+      pass
 #Code for VEML6070 on Raspberry Pi 2/3  may need modification
 #if __name__ == '__main__':
 #    veml = veml6070.Veml6070()
@@ -164,7 +176,8 @@ while 1:
    print("Sending data!")
 #        s.send(bytes([bytestream[4], bytestream[5], bytestream[6],bytestream[7],tempstruct[0],tempstruct[1],rhstruct[0],rhstruct[1],dewstruct[0],dewstruct[1],presstruct[0],presstruct[1],broadlumstruct[0],broadlumstruct[1],IRlumstruct[0],IRlumstruct[1]]))#,relativehumid,dewpoint]))
   #Dust_pm2.5H,Dust_pm2.5L,Dust_pm10H,Dust_pm10L,SignedCelciusH,SignedCelciusL,SignedDewpointH,SignedDewpointL,RHH,RHL,Press*10H,Press*10L,UVH,UVL,AMBH,AMBL,IRH,IRL
-   s.send(bytes([0x00,0x22,0x00,0x12,0x00,0x13,0x00,0x25,0x01,0x2a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10]))
+#   s.send(bytes([0x00,0x22,0x00,0x12,0x00,0x13,0x00,0x25,0x01,0x2a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10]))
+   s.send(bytes([0x00,0x22,0x00,0x12,tempstruct[0],tempstruct[1],relhumidstruct[0],relhumidstruct[1],dewstruct[0],dewstruct[1],pressstruct[0],pressstruct[1],0x0b,0x0c,0x0d,0x0e,0x0f,0x10]))
 
    print('saving LoRa NVRAM')
    lora.nvram_save()
