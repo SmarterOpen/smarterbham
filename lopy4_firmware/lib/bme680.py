@@ -270,6 +270,9 @@ class BME680(BME680Data):
 
             self.data.pressure = self._calc_pressure(adc_pres) / 100.0
             self.data.humidity = self._calc_humidity(adc_hum) / 1000.0
+            h = (math.log(self.data.humidity, 10) - 2) / 0.4343 + (17.62 * self.data.temperature) / (243.12 + self.data.temperature)
+            self.data.dew_point = 243.12 * h / (17.62 - h)
+
             self.data.gas_resistance = self._calc_gas_resistance(adc_gas_res, gas_range)
             return True
 
