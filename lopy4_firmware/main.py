@@ -2,6 +2,8 @@
 # Modifying to work with Pycom Lopy4
 
 #BME680 project from Micropython.. may need some modifications to run
+import nets
+import machine
 import bme680
 from i2c import I2CAdapter
 from network import LoRa
@@ -22,6 +24,35 @@ pycom.rgbled(0x7f0000) #red
 i2c_dev = I2CAdapter()
 sensor = bme680.BME680(i2c_device=i2c_dev)
 
+#get online using known nets if available
+if machine.reset_cause() != machine.SOFT_RESET:
+    from network import WLAN
+    wl = WLAN()
+    wl.mode(WLAN.STA)
+    original_ssid = wl.ssid()
+    original_auth = wl.auth()
+
+    print("Scanning for known wifi nets")
+    available_nets = wl.scan()
+    netsisee = frozenset([e.ssid for e in available_nets])
+
+    known_nets_names = frozenset([key for key in nets.known_nets])
+    net_to_use = list(netsisee & known_nets_names)
+    try:
+        net_to_use = net_to_use[0]
+        net_properties = nets.known_nets[net_to_use]
+        pwd = net_properties['pwd']
+        sec = [e.sec for e in available_nets if e.ssid == net_to_use][0]
+        if 'wlan_config' in net_properties:
+            wl.ifconfig(config=net_properties['wlan_config'])
+        wl.connect(net_to_use, (sec, pwd), timeout=10000)
+        while not wl.isconnected():
+            machine.idle() # save power while waiting
+        print("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
+
+    except Exception as e:
+        print("Failed to connect to any known network, going into AP mode")
+        wl.init(mode=WLAN.AP, ssid=original_ssid, auth=original_auth, channel=6, antenna=WLAN.INT_ANT)
 
 #VEML6070 code for Python on Raspberry Pi 2/3
 #import veml6070
