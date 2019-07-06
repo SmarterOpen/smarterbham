@@ -11,7 +11,7 @@ import struct
 import time
 import os
 import math
-import abpkeys
+import lorakeys
 import pycom
 import ustruct
 pycom.heartbeat(False) #needs to be disabled for LED functions to work
@@ -63,7 +63,7 @@ print('Joining LoRa via OTAA')
 # join a network using ABP (Activation By Personalization)
 #lora.join(activation=LoRa.ABP, auth=(dev_addr, nwk_swkey, app_swkey))
 # join a network using OTAA (Over the Air Activation)
-lora.join(activation=LoRa.OTAA, auth=(abpkeys._dev_eui,abpkeys._app_eui, abpkeys._app_key), timeout=0, dr=0)
+lora.join(activation=LoRa.OTAA, auth=(lorakeys._dev_eui,lorakeys._app_eui, lorakeys._app_key), timeout=0, dr=0)
 # wait until the module has joined the network
 while not lora.has_joined():
     time.sleep(2.4)
