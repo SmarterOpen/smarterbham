@@ -150,6 +150,7 @@ while 1:
          pressstruct=ustruct.pack('>H',int(sensor.data.pressure))
          print('pressure:',pressstruct[0]*256+pressstruct[1])
          relhumidstruct=ustruct.pack('>H',int(sensor.data.humidity))
+         #vocStruct=ustruct.pack('>L',int(sensor.data.gas_resistance))
          pybytes.send_signal(2,sensor.data.temperature)
 #            time.sleep(2)
 #            time.sleep(1)
@@ -177,7 +178,16 @@ while 1:
 #        s.send(bytes([bytestream[4], bytestream[5], bytestream[6],bytestream[7],tempstruct[0],tempstruct[1],rhstruct[0],rhstruct[1],dewstruct[0],dewstruct[1],presstruct[0],presstruct[1],broadlumstruct[0],broadlumstruct[1],IRlumstruct[0],IRlumstruct[1]]))#,relativehumid,dewpoint]))
   #Dust_pm2.5H,Dust_pm2.5L,Dust_pm10H,Dust_pm10L,SignedCelciusH,SignedCelciusL,SignedDewpointH,SignedDewpointL,RHH,RHL,Press*10H,Press*10L,UVH,UVL,AMBH,AMBL,IRH,IRL
 #   s.send(bytes([0x00,0x22,0x00,0x12,0x00,0x13,0x00,0x25,0x01,0x2a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10]))
-   s.send(bytes([0x00,0x22,0x00,0x12,tempstruct[0],tempstruct[1],relhumidstruct[0],relhumidstruct[1],dewstruct[0],dewstruct[1],pressstruct[0],pressstruct[1],0x0b,0x0c,0x0d,0x0e,0x0f,0x10]))
+   s.send(bytes([0x00,0x22,0x00,0x12,
+                 tempstruct[0],tempstruct[1],
+                 relhumidstruct[0],relhumidstruct[1],
+                 dewstruct[0],dewstruct[1],
+                 pressstruct[0],pressstruct[1],
+                 0x0b,0x0c,
+                 0x0d,0x0e,
+                 0x0f,0x10,
+                 #vocStruct[0],vocStruct[1],vocStruct[2],vocStruct[3]]))
+                 0x00,0x00,0x00,0x00]))#VOC resistance?  
 
    print('saving LoRa NVRAM')
    lora.nvram_save()
