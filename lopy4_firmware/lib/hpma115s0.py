@@ -130,26 +130,38 @@ class HPMA115S0:
         Function to start reading when the sensor is ready to transmit datas
 
         """
-        c = self._uart.read()
-        print("Serial:")#added local serial output for debug purpose
-        print(c)# for some reason it's not getting any output - this returns "None" to serial port
-        if c is not None:
-             for a in range(len(c)):
-                  cn = ord(a)
-                  if cn == terminator:
-                       return True
+        print('uart:',self._uart.any())
+        while(self._uart.any()>0):
+           c = self._uart.read(1)
+           print("Serial:")#added local serial output for debug purpose
+           print(c[0])# for some reason it's not getting any output - this returns "None" to serial port
+           if c[0] == terminator:
+                print('found:',terminator)
+                return True
+        #c = self._uart.read()
+        #print("Serial:")#added local serial output for debug purpose
+        #print(c)# for some reason it's not getting any output - this returns "None" to serial port
+        #if c is not None:
+        #     for a in range(len(c)):
+        #          cn = ord(a)
+        #          if cn == terminator:
+         #              return True
 
     def readBytes(self, buffer, length, index):
         count = 0
+        print('readbytes:',buffer,' ',length,' ',index)
         while (count < length):
-            c = self._uart.read()
-            for ch in c:
-                ch = ord(c)
-                if (ch < 0):
-                    break
-                buffer[index] = ch
-                count += 1
-                index += 1
+           while(self._uart.any()>0):
+              c = self._uart.read(1)
+              buffer[index]=c
+ #           for ch in c:
+ #               ch = c[0]
+ #               if (ch < 0):
+ #                   break
+ #               buffer[index] = ch
+              count += 1
+              index += 1
+        print('buf:',buffer,' ',count)
         return [buffer, count]
 
     
