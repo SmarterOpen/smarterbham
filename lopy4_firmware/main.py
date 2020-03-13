@@ -16,6 +16,7 @@ import math
 import lorakeys
 import pycom
 import ustruct
+import si1132
 pycom.heartbeat(False) #needs to be disabled for LED functions to work
 pycom.rgbled(0x7f0000) #red
 #from machine import I2C,Pin
@@ -23,6 +24,7 @@ pycom.rgbled(0x7f0000) #red
 #i2c.init(I2C.MASTER, baudrate=100000)
 i2c_dev = I2CAdapter()
 sensor = bme680.BME680(i2c_device=i2c_dev)
+si = si1132.SI1132(i2c_dev)
 
 #get online using known nets if available
 if machine.reset_cause() != machine.SOFT_RESET:
@@ -193,6 +195,17 @@ while 1:
 #      pybytes.send_signal(2,85)
 #      pycom.rgbled(red)
       pass
+   try:
+        broadlumstruct=struct.pack(">h",round(si.read_visible()))
+   except Exception as e:
+      print('DEBUG :: @Get Reading from the si1132 :: Exception: ' + str(e))
+      pass
+   try:
+        IRlumstruct=struct.pack(">h",round(si.read_IR()))
+   except Exception as e:
+      print('DEBUG :: @Get Reading from the si1132 :: Exception: ' + str(e))
+      pass
+
 #Code for VEML6070 on Raspberry Pi 2/3  may need modification
 #if __name__ == '__main__':
 #    veml = veml6070.Veml6070()
@@ -215,8 +228,8 @@ while 1:
                  dewstruct[0],dewstruct[1],
                  pressstruct[0],pressstruct[1],
                  0x0b,0x0c,
-                 0x0d,0x0e,
-                 0x0f,0x10,
+                 broadlumstruct[0],broadlumstruct[1],
+                 IRlumstruct[0],IRlumstruct[1],
                  #vocStruct[0],vocStruct[1],vocStruct[2],vocStruct[3]]))
                  0x00,0x00,0x00,0x00]))#VOC resistance?  
 
