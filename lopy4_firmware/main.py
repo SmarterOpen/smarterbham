@@ -80,8 +80,10 @@ if len(activesensors)>0:#see if any devices were detected.
       HasBME680=True
     if activesensors[c]==96:#0x60 IE Si1132 - Sensor marked EOL but may exist in some assemblies.  Code works but needs fine-tuning to work properly between low and high intensity
       HasSi1132=True
-    if activesensors[c]==83:#0x60 IE Si1151 - Currently active sensor.  Note some old sensors may have wrong address - I think 81 instead of 83 due to manufacturing defect.  THey still work.
+    if activesensors[c]==83:#0x60 IE Si1151 - Currently active sensor.  Note some old sensors may have wrong address 
       HasSi1151=True
+    if activesensors[c]==81:#0x60 IE Si1151 - Currently active sensor.  Note some old sensors may have wrong address due to manufacturing defect.  They still work.
+      HasSi1151wa=True# this is a rare batch of parts that has the wrong i2c address
     if activesensors[c]==56:#0x60 IE GenUV Sensor for UV-A - Small batch of sensors were assembled - the chip costs $45 in low quantities
       HasGUVA=True
     if activesensors[c]==57:#0x60 IE GenUV Sensor for UV-B - Small batch of sensors were assembled - the chip costs $45 in low quantities
