@@ -223,10 +223,10 @@ while 1:
   recv=[]#zero out the receive tuple
   dump=uart.read()#zero out the receive buffer
   start=utime.ticks_ms()#set up a start point for sensor timeout
-  pm10=ustruct.pack('>H',int(-1))#put some null values in these registers in case there's no HPMA sensor found
-  pm25=ustruct.pack('>H',int(-1))
-  pm1=ustruct.pack('>H',int(-1))
-  pm4=ustruct.pack('>H',int(-1))
+  pm10=ustruct.pack('>H',int(0))#put some null values in these registers in case there's no HPMA sensor found
+  pm25=ustruct.pack('>H',int(0))
+  pm1=ustruct.pack('>H',int(0))
+  pm4=ustruct.pack('>H',int(0))
   while(utime.ticks_diff(start,utime.ticks_ms())> -read_timeout):
     if(uart.any()>0):
       inp = uart.read(1) # Read a character from the input
