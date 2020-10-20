@@ -276,7 +276,7 @@ while 1:
   dewstruct=ustruct.pack('>H',int(0))
   pressstruct=ustruct.pack('>H',int(0))
   relhumidstruct=ustruct.pack('>H',int(0))
-  vocStruct=ustruct.pack('>H',int(0))
+  vocStruct=ustruct.pack('>L',int(0))
 
   if HasBME680 == True:#if the BME was detected, get some data.
 
