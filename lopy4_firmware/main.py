@@ -23,6 +23,18 @@ from machine import UART, I2C,Pin #enable the I2C bus
 pycom.heartbeat(False) #needs to be disabled for LED functions to work
 pycom.rgbled(0x7f0000) #red
 
+def getBattery():
+  Batt=0
+  i=0
+  while (i<20):#take 20 readings and average it to get a more consistent value
+    val = apin()*0.011849#calculated based on testing.  Voltage divider with 2Mohm resistor on high side and 178kohm with a parallelled 100nF cap on low side
+    #this scales the 40v max input voltage down to 3.3v
+    Batt+=val
+    i+=1
+  BattAverage=Batt/20.0
+  print('Battery Voltage = ',BattAverage)
+  return BattAverage
+
 #get online using known nets if available
 #Do this before working with anything else.. Because some code faults will kick you offline unless you're in range of the primary network in pybytes_config.json
 #If that happens... set up a cellphone as a hotspot using the SAME credentials as the primary network in pybytes_config.json and reboot the sensors
@@ -322,19 +334,23 @@ while 1:
       pass
   broadlumstruct=struct.pack(">h",broadlum)
   IRlumstruct=struct.pack(">h",IR)
+  Battery=getBattery() #measure the input voltage on P13
+  BattStruct=ustruct.pack('>H',int(Battery*10))#use an int instead of a float with 1 decimal accuracy, on TTN packet decoder this gets divided by 10
 
   s.setblocking(True)
   print("Sending data!")
-  s.send(bytes([pm25[0],pm25[1],pm10[0],pm10[1],
-                 tempstruct[0],tempstruct[1],
-                 relhumidstruct[0],relhumidstruct[1],
-                 dewstruct[0],dewstruct[1],
-                 pressstruct[0],pressstruct[1],
+  s.send(bytes([pm25[0],pm25[1],pm10[0],pm10[1],#Particulate values for pm2.5 and pm10
+                 tempstruct[0],tempstruct[1],#Temperature
+                 relhumidstruct[0],relhumidstruct[1],#Relative Humidity
+                 dewstruct[0],dewstruct[1],#dewpoint
+                 pressstruct[0],pressstruct[1],#Barometric Pressure
                  0x00,0x00,#This is a placeholder for UV data from the Si1133
                  broadlumstruct[0],broadlumstruct[1],
                  IRlumstruct[0],IRlumstruct[1],
                  vocStruct[0],vocStruct[1],vocStruct[2],vocStruct[3],#VOC Resistance
-                 pm1[0],pm1[1],pm4[0],pm4[1]]))  
+                 pm1[0],pm1[1],pm4[0],pm4[1],#particulate values for pm1 and pm4
+                 BattStruct[0],BattStruct[1]#Battery Voltage
+               ]))
    
 #Publish duplicate data to Pybytes.. Have to put a 1s delay between each packet or it will reject them.. Them's the Pybytes rules, not mine!
   pybytes.send_signal(0,(pm25[0]*256)+pm25[1])
@@ -358,7 +374,9 @@ while 1:
   pybytes.send_signal(11,(pm1[0]*256)+pm1[1])
   time.sleep(1)
   pybytes.send_signal(12,(pm4[0]*256)+pm4[1])
-   
+  time.sleep(1)
+  pybytes.send_signal(13,Battery)
+ 
   print('saving LoRa NVRAM')
   lora.nvram_save()
     # make the socket non-blocking
