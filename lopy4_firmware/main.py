@@ -19,6 +19,9 @@ import pycom #Used to publish data to PyBytes thru Send_Signal
 import ustruct #Used to pack/unpack byte segments for sending data to LoRa
 import si1132
 from machine import UART, I2C,Pin #enable the I2C bus
+adc = machine.ADC()             # create an ADC object
+adc.init(bits=12)
+apin = adc.channel(pin='P13',attn=3)   # create an analog pin on P13 to measure incoming battery voltage thru a 2Mohm / 178kohm divider network, scaling 40v to 3.3v
 
 pycom.heartbeat(False) #needs to be disabled for LED functions to work
 pycom.rgbled(0x7f0000) #red
