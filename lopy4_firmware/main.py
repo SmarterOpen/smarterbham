@@ -160,13 +160,32 @@ lora.add_channel(7, frequency=905300000, dr_min=0, dr_max=3)
 
 print('US channels set')
 time.sleep(1)
-print('Joining LoRa via OTAA')
+lora.nvram_restore()
+#getBattery() #I was hoping to pass battery voltage up to TTN, but it's not yet implemented, so bypass for now.
+if not lora.has_joined():
+  pybytes.send_signal(2,4)
+  print('Joining LoRa via OTAA')
 
 # join a network using ABP (Activation By Personalization)  This was highly problematic because when the sensor lost power, the sent counter would reset and no data would get thru
 #lora.join(activation=LoRa.ABP, auth=(dev_addr, nwk_swkey, app_swkey))
 # join a network using OTAA (Over the Air Activation)
-lora.join(activation=LoRa.OTAA, auth=(lorakeys._dev_eui,lorakeys._app_eui, lorakeys._app_key), timeout=0, dr=0)
-
+  lora.join(activation=LoRa.OTAA, auth=(lorakeys._dev_eui,lorakeys._app_eui, lorakeys._app_key), timeout=0, dr=0)
+else:
+  print('LoRa already joined..')
+  pybytes.send_signal(2,3)
+  time.sleep(0.4)
+  pycom.rgbled(0x007f00) #grn    
+  time.sleep(0.1)
+  pycom.rgbled(0x000000) #blk    
+  time.sleep(0.4)
+  pycom.rgbled(0x007f00) #grn    
+  time.sleep(0.1)
+  pycom.rgbled(0x000000) #blk    
+  time.sleep(0.4)
+  pycom.rgbled(0x007f00) #grn    
+  time.sleep(0.1)
+  pycom.rgbled(0x000000) #blk    
+  
 #currently, this waits to join a channel.. but if no LoRa devices are available, it would stick here forever
 #I want to eventually set this up so it checks for WIFI first.. and sends direct to AWS.. If Wifi isn't available, fallback to LoRa
 # wait until the module has joined the network
