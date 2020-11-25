@@ -30,7 +30,7 @@ def getBattery():
   Batt=0
   i=0
   while (i<20):#take 20 readings and average it to get a more consistent value
-    val = apin()*0.011849#calculated based on testing.  Voltage divider with 2Mohm resistor on high side and 178kohm with a parallelled 100nF cap on low side
+    val = apin()*0.01278#calculated based on testing.  Voltage divider with 2Mohm resistor on high side and 178kohm with a parallelled 100nF cap on low side
     #this scales the 40v max input voltage down to 3.3v
     Batt+=val
     i+=1
