@@ -45,17 +45,18 @@ def getBattery():
 if machine.reset_cause() != machine.SOFT_RESET:
     from network import WLAN
     wl = WLAN()
-    wl.mode(WLAN.STA)
-    original_ssid = wl.ssid()
-    original_auth = wl.auth()
+    if not wl.isconnected():
+      wl.mode(WLAN.STA)
+      original_ssid = wl.ssid()
+      original_auth = wl.auth()
 
-    print("Scanning for known wifi nets")
-    available_nets = wl.scan()
-    netsisee = frozenset([e.ssid for e in available_nets])
+      print("Scanning for known wifi nets")
+      available_nets = wl.scan()
+      netsisee = frozenset([e.ssid for e in available_nets])
 
-    known_nets_names = frozenset([key for key in nets.known_nets])
-    net_to_use = list(netsisee & known_nets_names)
-    try:
+      known_nets_names = frozenset([key for key in nets.known_nets])
+      net_to_use = list(netsisee & known_nets_names)
+      try:
         net_to_use = net_to_use[0]
         net_properties = nets.known_nets[net_to_use]
         pwd = net_properties['pwd']
@@ -68,7 +69,7 @@ if machine.reset_cause() != machine.SOFT_RESET:
         print("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
         pybytes.reconnect()
 
-    except Exception as e:
+      except Exception as e:
         print("Failed to connect to any known network, going into AP mode")
         wl.init(mode=WLAN.AP, ssid=original_ssid, auth=original_auth, channel=6, antenna=WLAN.INT_ANT)
         
@@ -86,6 +87,7 @@ HasVEML6075=False
 i2c = I2C(0, pins=("P9","P10"))
 i2c.init(I2C.MASTER, baudrate=100000)
 activesensors=i2c.scan()#Scan for active I2C devices and store in a tuple
+print(activesensors)#display the tuple of active sensors reported
 pybytes.send_signal(2,len(activesensors))
 if len(activesensors)>0:#see if any devices were detected.
   for c in range (0,len(activesensors)):#enable code for any found sensors
@@ -125,9 +127,9 @@ if HasSi1132 == True:
 DUSTEN = Pin('P23', mode=Pin.OUT)
 PinOn=1
 PinOff=0
-#DUSTEN.value(PinOn)
-DUSTEN.value(PinOff)
 print("turning fan off")
+DUSTEN.value(PinOff)
+
 
 
 
@@ -141,7 +143,9 @@ print("turning fan off")
 
 #Above code bypassed because I needed to manually select the correct frequencies to work properly in the US.
 #Otherwise, it wanted to send to 64 channels randomly and 88% would be to inactive channels for that region
+print('Initialize LoRa')
 lora = LoRa(mode=LoRa.LORAWAN, public=1,  adr=0, tx_retries=0)
+print('Remove default channels')
 for i in range(0, 71):
     lora.remove_channel(i)
 print('Removed default channels')
